@@ -20,6 +20,8 @@
 
 @property (strong, nonatomic)NSNumber *tip;
 
+@property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
+
 @end
 
 @implementation ViewController
@@ -28,8 +30,14 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     self.tip = [[NSNumber alloc] init];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidChangeFrameNotificationHandler:) name:UIKeyboardWillChangeFrameNotification object:nil];
+    
 }
 
+- (IBAction)tapHandler:(UITapGestureRecognizer *)sender {
+    [self.view endEditing:YES];
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -39,11 +47,13 @@
 - (IBAction)sliderValueChanged:(UISlider *)sender {
     if (sender == self.tipSlider) {
         self.tipPercentDisplay.text = [NSString stringWithFormat:@"%.0lf%%",floor(self.tipSlider.value)];
+        
+        [self updateTipAmount];
     }
 }
 
-- (IBAction)calculateTip:(UIButton *)sender {
-    
+- (void)updateTipAmount;
+{
     float tipRawNum = floor(self.tipSlider.value);
     float tipPercent = (tipRawNum == 0) ? 0.15 : tipRawNum / 100;
     
@@ -54,5 +64,26 @@
     
     self.tipAmountLabel.text = [NSString stringWithFormat:@"$%.2lf",[self.tip floatValue]];
 }
+
+- (void)keyboardDidChangeFrameNotificationHandler:(NSNotification *)notification
+{
+    NSDictionary *userInfo = notification.userInfo;
+    NSLog(@"Keyboard changed frame!!");
+    
+    CGRect keyboardFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGFloat keyboardHeight = keyboardFrame.size.height;
+    
+    NSLog(@"Height: %f", keyboardHeight);
+    
+    CGFloat duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] floatValue];
+    
+    [UIView animateWithDuration:duration animations:^{
+        UIEdgeInsets insets = self.scrollView.contentInset;
+        insets.bottom = keyboardHeight;
+        self.scrollView.contentInset = insets;
+        self.scrollView.scrollIndicatorInsets = insets;
+    }];
+}
+
 
 @end
