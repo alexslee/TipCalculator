@@ -12,11 +12,11 @@
 
 @property (weak, nonatomic) IBOutlet UITextField *billAmountField;
 
-@property (weak, nonatomic) IBOutlet UILabel *tipDisplay;
+@property (weak, nonatomic) IBOutlet UITextField *tipField;
+
+@property (weak, nonatomic) IBOutlet UILabel *tipAmountLabel;
 
 @property (strong, nonatomic)NSNumber *tip;
-
-@property (strong, nonatomic)NSNumber *total;
 
 @end
 
@@ -26,7 +26,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     self.tip = [[NSNumber alloc] init];
-    self.total = [[NSNumber alloc] init];
 }
 
 
@@ -36,13 +35,15 @@
 }
 
 - (IBAction)calculateTip:(UIButton *)sender {
+    
+    float tipRawNum = [self.tipField.text floatValue];
+    float tipPercent = (tipRawNum == 0) ? 0.15 : tipRawNum / 100;
     NSString *baseInput = self.billAmountField.text;
     NSNumber *baseCost = [NSNumber numberWithFloat:[baseInput floatValue]];
     
-    self.tip = [NSNumber numberWithFloat:[baseCost floatValue] * 0.15 ];
-    self.total = [NSNumber numberWithFloat:[baseCost floatValue] * 1.15];
+    self.tip = [NSNumber numberWithFloat:[baseCost floatValue] * tipPercent ];
     
-    self.tipDisplay.text = [NSString stringWithFormat:@"$%.2lf",[self.tip floatValue]];
+    self.tipAmountLabel.text = [NSString stringWithFormat:@"$%.2lf",[self.tip floatValue]];
 }
 
 @end
