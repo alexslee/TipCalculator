@@ -33,6 +33,8 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidChangeFrameNotificationHandler:) name:UIKeyboardWillChangeFrameNotification object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textFieldDidChange:) name:UITextFieldTextDidChangeNotification object:nil];
+    
 }
 
 - (IBAction)tapHandler:(UITapGestureRecognizer *)sender {
@@ -63,6 +65,10 @@
     self.tip = [NSNumber numberWithFloat:[baseCost floatValue] * tipPercent ];
     
     self.tipAmountLabel.text = [NSString stringWithFormat:@"$%.2lf",[self.tip floatValue]];
+}
+
+- (void)textFieldDidChange:(NSNotification *)notification {
+    [self updateTipAmount];
 }
 
 - (void)keyboardDidChangeFrameNotificationHandler:(NSNotification *)notification
